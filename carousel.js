@@ -145,7 +145,8 @@
                                     // clone the transcluded element, passing in the new scope.
                                     parent.append(listItem); // add to DOM
                                     
-                                    var liElement = parent.find('li:last-child');
+                                    var liElements = parent.find('li');
+                                    var liElement = angular.element(liElements[liElements.length - 1]);
                                     liElement.append(clone);
 
                                     $compile(liElement)(childScope);
