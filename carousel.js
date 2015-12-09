@@ -31,7 +31,8 @@
             return vm.carouselItems.length - index;
         }
 
-        function getStyle(item, index) {
+        function getStyle(index) {
+            var item = vm.carouselItems[index];
             var percentage = 0;
             if (vm.carouselItems.length > 1) {
                 if (vm.activeIndex === 0 && index === vm.carouselItems.length - 1) {
@@ -87,7 +88,7 @@
     /**    
     * Directive definition
      */
-    function carouselDirective() {
+    function carouselDirective($compile) {
         return {
             restrict: "EA",
             scope: {
@@ -137,20 +138,22 @@
                                                    "style=\"position: absolute; width: 100%; height: 100%; display: block; transition: opacity 0.7s ease-in, transform 1s linear; background-size: cover; background-position: 50% 0%;\" " +
                                                    "data-ng-mouseenter=\"carousel.pause()\" " +
                                                    "data-ng-mouseleave=\"carousel.restart()\" " +
-                                                   "data-ng-click=\"alert('coucou')\" " +
-                                                   "data-ng-style=\"carousel.getStyle(childScope[indexString], $index)\" " +
+                                                   "data-ng-style=\"carousel.getStyle("+i+")\" " +
                                                    "data-ng-class=\"{'active': $index==carousel.activeIndex}\">" +
                                                    "</li>";
 
                                     // clone the transcluded element, passing in the new scope.
                                     parent.append(listItem); // add to DOM
                                     
-                                    parent.find('li:last-child').append(clone);
+                                    var liElement = parent.find('li:last-child');
+                                    liElement.append(clone);
+
+                                    $compile(liElement)(childScope);
 
                                     var block = {};
                                     block.el = listItem;
                                     block.scope = childScope;
-                                    $controller.carouselItems.push(block);
+                                    $controller.carouselItems.push(collection[i]);
                                 });
                             }
                             $controller.restart();
@@ -161,7 +164,7 @@
         };
     }
 
-    carouselDirective.$inject = [];
+    carouselDirective.$inject = ["$compile"];
 
     /*
      * Module definition
