@@ -11,6 +11,7 @@
 
         vm.activeIndex = 0;
         vm.interval = undefined;
+        vm.carouselItems = [];
 
         ///////////////////////////////////
 
@@ -50,7 +51,7 @@
                 }
             }
             return {
-                'background-image': "url(" + item.ImageUrl + ")",
+                'background-image': "url(" + item.image_path + ")",
                 'transform': "translateX(" + percentage + "%)",
                 'z-index': getZIndex(index)
             };
@@ -109,12 +110,10 @@
                     var myLoop = $attr.carousel,
                         match = myLoop.match(/^\s*(.+)\s+in\s+(.*?)\s*(\s+track\s+by\s+(.+)\s*)?$/),
                         indexString = match[1],
-                        collectionString = match[2],
-                        elements = [];
+                        collectionString = match[2];
 
-                    var container = "<div style=\"overflow:hidden;position:relative;height:100%;;overflow:hidden;position:relative;height:100%;\">" +
+                    var container = "<div style=\"overflow:hidden;position:relative;height:100%;overflow:hidden;position:relative;height:100%;\">" +
                         "<ul style=\"height: 100%;list-style: none;margin: 0;padding: 0;\">" +
-                        //"<li style=\"position: absolute; width: 100%; height: 100%; display: block; transition: opacity 0.7s ease-in, transform 1s linear; background-size: cover; background-position: 50% 0%;\" data-ng-mouseenter=\"carousel.pause()\" data-ng-mouseleave=\"carousel.restart()\" data-ng-class=\"{'active': $index==caroussel.activeIndex}\">       </li>" +
                         "</ul>" +
                         "</div>";
                     $element.append(container);
@@ -130,32 +129,25 @@
 
                             linker(childScope, function (clone) {
 
-                                var listItem = "<li style=\"position: absolute; width: 100%; height: 100%; display: block; transition: opacity 0.7s ease-in, transform 1s linear; background-size: cover; background-position: 50% 0%;\" data-ng-mouseenter=\"carousel.pause()\" data-ng-mouseleave=\"carousel.restart()\" data-ng-class=\"{'active': $index==caroussel.activeIndex}\">"+clone+"</li>";
+                                var listItem = "<li " +
+                                               "style=\"position: absolute; width: 100%; height: 100%; display: block; transition: opacity 0.7s ease-in, transform 1s linear; background-size: cover; background-position: 50% 0%;\" " +
+                                               "data-ng-mouseenter=\"carousel.pause()\" " +
+                                               "data-ng-mouseleave=\"carousel.restart()\" " +
+                                               "data-ng-style=\"caroussel.getStyle(childScope[indexString], $index)\" " +
+                                               "data-ng-class=\"{'active': $index==caroussel.activeIndex}\">" +
+                                               "</li>";
+                                
                                 // clone the transcluded element, passing in the new scope.
-                                parent.append(clone); // add to DOM
+                                parent.append(listItem); // add to DOM
+                                
+                                parent.find('li:last-child').append(clone);
+
                                 var block = {};
                                 block.el = listItem;
                                 block.scope = childScope;
-                                elements.push(block);
+                                $scope.carousel.carouselItems.push(block);
                             });
                         }
-
-                        //var i, block, childScope;
-                        // for (i = 0; i < collection.length; i++) {
-                        //         // create a new scope for every element in the collection.
-                        //         childScope = $scope.$new();
-
-                        //         // pass the current element of the collection into that scope
-                        //         childScope[indexString] = collection[i];
-                        //         linker(childScope, function(clone) {
-                        //             // clone the transcluded element, passing in the new scope.
-                        //             parent.append(clone); // add to DOM
-                        //             block = {};
-                        //             block.el = clone;
-                        //             block.scope = childScope;
-                        //             elements.push(block);
-                        //         });
-                        //     };
                     });
                 };
             }
