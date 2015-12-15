@@ -63,6 +63,9 @@
         }
 
         function restart() {
+            if (vm.interval) {
+                $interval.cancel(vm.interval);
+            }
             vm.interval = $interval(function() {
                 if (vm.activeIndex === vm.carouselItems.length - 1) {
                     vm.activeIndex = 0;
