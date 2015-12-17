@@ -1,5 +1,6 @@
 {
   "name": "ng-template-carousel",
+  "version": "1.0.0",
   "description": "Carousel for AngularJS using template to add HTML content inside it. Only pure pure js and css transitions.",
   "main": "ng-template-carousel.js",
   "moduleType": [],
