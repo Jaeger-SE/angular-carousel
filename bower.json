@@ -1,0 +1,24 @@
+{
+  "name": "ng-template-carousel",
+  "description": "Carousel for AngularJS using template to add HTML content inside it. Only pure pure js and css transitions.",
+  "main": "ng-template-carousel.js",
+  "moduleType": [],
+  "keywords": [
+    "angular",
+    "carousel",
+    "template"
+  ],
+  "authors": [
+    "Esteban Goffaux",
+    "Clement Rigo"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/Jaeger-SE/angular-carousel",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
