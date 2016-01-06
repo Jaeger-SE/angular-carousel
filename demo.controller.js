@@ -10,17 +10,29 @@
 
         vm.slides = [
             {
-                src: 'http://lorempixel.com/1200/250/cats',
+                src: 'http://placehold.it/1140x250?text=May',
                 title: 'Slide 1'
             },
             {
-                src: 'http://lorempixel.com/1200/250/people',
+                src: 'http://placehold.it/1140x250?text=The',
                 title: 'Slide 2'
             },
             {
-                src: 'http://lorempixel.com/1200/250/food',
+                src: 'http://placehold.it/1140x250?text=Force',
                 title: 'Slide 3'
-            }
+            },
+            {
+                src: 'http://placehold.it/1140x250?text=Be',
+                title: 'Slide 4'
+            },
+            {
+                src: 'http://placehold.it/1140x250?text=With',
+                title: 'Slide 5'
+            },
+            {
+                src: 'http://placehold.it/1140x250?text=You',
+                title: 'Slide 6'
+            },
         ];
     }
 })();
