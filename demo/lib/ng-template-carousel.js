@@ -17,17 +17,20 @@
         
         var transitionTime = 1; // seconds
 
-        function getZIndex(index) {
+        function getOpacity(index) {
             vm.carouselMultiple = parseInt(vm.carouselMultiple);
             if (vm.carouselMultiple > 1) {
-                return getZIndexForMultiple(index);
+                return getOpacityForMultiple(index);
             } else {
-                return getZIndexForRegular(index);
+                return getOpacityForRegular(index);
             }
 
-            function getZIndexForMultiple(index) {
-                if (index === vm.carouselItems.length - 1) {
+            function getOpacityForMultiple(index) {
+                if (index === (vm.carouselItems.length - 1) && vm.activeIndex === 1) {
                     return 0;
+                }
+                if (index === (vm.carouselItems.length - 1) && vm.activeIndex === 0) {
+                    return 1;
                 }
                 if (index === (vm.activeIndex - 1) || index === vm.activeIndex) {
                     return 1;
@@ -45,7 +48,7 @@
 
             }
 
-            function getZIndexForRegular(index) {
+            function getOpacityForRegular(index) {
                 if (index === 0) {
                     // first
                     if (vm.activeIndex === vm.carouselItems.length - 1) {
@@ -67,6 +70,9 @@
             vm.carouselMultiple = parseInt(vm.carouselMultiple);
             var item = vm.carouselItems[index];
             var percentage = 0;
+            if (item.src === undefined) {
+                item.src = ''; // quickfix I know its ugly
+            }
             if (vm.carouselItems.length > 1) {
                 if (vm.carouselMultiple > 1) {
                     percentage = getStyleForMultiple(index, percentage);
@@ -114,8 +120,8 @@
             return {
                 'background-image': "url(" + item.src + ")",
                 'transform': "translateX(" + percentage + "%)",
-                'transition': 'opacity 0.7s ease-in, transform '+ transitionTime +'s linear',
-                'z-index': getZIndex(index)
+                'transition': 'transform '+ transitionTime +'s linear',
+                'opacity': getOpacity(index)
             };
         }
 
@@ -210,8 +216,8 @@
                             indexString = match[1],
                             collectionString = match[2];
 
-                        var container = "<div style=\"overflow:hidden;position:relative;height:100%;\">" +
-                            "<ul style=\"height: 100%;list-style: none;margin: 0;padding: 0;\">" +
+                        var container = "<div style=\"overflow:hidden;position:relative;height:100%;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;\">" +
+                            "<ul style=\"height: 100%;list-style: none;margin: 0;padding: 0;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;\">" +
                             "</ul>" +
                             "</div>";
                         $element.append(container);
@@ -230,7 +236,7 @@
                                 linker(childScope, function (clone) {
 
                                     var listItem = "<li " +
-                                                   "style=\"position:absolute;width: "+width+"%; height: 100%; background-size: cover; background-position: 50% 0%;\" " +
+                                                   "style=\"position:absolute;width: "+width+"%; height: 100%; background-size: cover; background-position: 50% 0%;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;\" " +
                                                    "data-ng-mouseenter=\"carousel.pause()\" " +
                                                    "data-ng-mouseleave=\"carousel.restart()\" " +
                                                    "data-ng-click=\"carousel.goToIndex("+i+")\" " +
