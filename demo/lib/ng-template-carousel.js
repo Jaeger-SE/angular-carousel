@@ -4,7 +4,7 @@
     /**
      * Carousel controller defintion
      */
-    function carouselController($interval) {
+    function carouselController($interval, $timeout) {
         var vm = this;
 
         ///////////////////////////////////
@@ -14,6 +14,8 @@
         vm.carouselItems = [];
 
         ///////////////////////////////////
+        
+        var transitionTime = 1; // seconds
 
         function getZIndex(index) {
             if (vm.carouselMultiple > 1) {
@@ -107,6 +109,7 @@
             return {
                 'background-image': "url(" + item.src + ")",
                 'transform': "translateX(" + percentage + "%)",
+                'transition': 'opacity 0.7s ease-in, transform '+ transitionTime +'s linear',
                 'z-index': getZIndex(index)
             };
         }
@@ -125,7 +128,30 @@
                 } else {
                     vm.activeIndex++;
                 }
-            }, vm.carouselDuration * 1000);
+            }, vm.carouselDuration * transitionTime*1000);
+        }
+
+        function goToIndex(index) {
+            var abs = Math.abs(vm.activeIndex - index);
+            var transitionTime2 = ((transitionTime*1000)/abs);
+
+            function doYourThing(index2) {
+                if(index2 == vm.activeIndex){
+                    return;
+                }
+
+                if (vm.activeIndex === vm.carouselItems.length - 1 || vm.activeIndex >= vm.carouselItems.length) {
+                    vm.activeIndex = 0;
+                } else {
+                    vm.activeIndex++;
+                }
+
+                $timeout(function(){
+                    doYourThing(index2);
+                }, transitionTime2);
+            }
+
+            doYourThing(index);
         }
 
         ///////////////////////////////////
@@ -133,13 +159,14 @@
         vm.getStyle = getStyle;
         vm.pause = pause;
         vm.restart = restart;
+        vm.goToIndex = goToIndex;
 
         //////////////////////////////////
 
         // vm.restart();
     }
 
-    carouselController.$inject = ["$interval"];
+    carouselController.$inject = ["$interval", "$timeout"];
 
     /**    
     * Directive definition
@@ -205,9 +232,10 @@
                                     }
 
                                     var listItem = "<li " +
-                                                   "style=\""+viewStyles+"width: "+width+"%; height: 100%; transition: opacity 0.7s ease-in, transform 1s linear; background-size: cover; background-position: 50% 0%;\" " +
+                                                   "style=\""+viewStyles+"width: "+width+"%; height: 100%; background-size: cover; background-position: 50% 0%;\" " +
                                                    "data-ng-mouseenter=\"carousel.pause()\" " +
                                                    "data-ng-mouseleave=\"carousel.restart()\" " +
+                                                   "data-ng-click=\"carousel.goToIndex("+i+")\" " +
                                                    "data-ng-style=\"carousel.getStyle("+i+")\" " +
                                                    "class=\""+$attr.carouselItemClassName+"\"" +
                                                    "data-ng-class=\"{'active': $index==carousel.activeIndex}\">" +
