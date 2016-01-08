@@ -18,6 +18,7 @@
         var transitionTime = 1; // seconds
 
         function getZIndex(index) {
+            vm.carouselMultiple = parseInt(vm.carouselMultiple);
             if (vm.carouselMultiple > 1) {
                 return getZIndexForMultiple(index);
             } else {
@@ -25,7 +26,6 @@
             }
 
             function getZIndexForMultiple(index) {
-                vm.carouselMultiple = parseInt(vm.carouselMultiple);
                 if (index === vm.carouselItems.length - 1) {
                     return 0;
                 }
@@ -64,6 +64,7 @@
         }
 
         function getStyle(index) {
+            vm.carouselMultiple = parseInt(vm.carouselMultiple);
             var item = vm.carouselItems[index];
             var percentage = 0;
             if (vm.carouselItems.length > 1) {
@@ -75,16 +76,20 @@
             }
 
             function getStyleForMultiple(index, percentage) {
+
+                percentage = -((vm.activeIndex - index) * 100);
                 if (vm.activeIndex === 0 && index === vm.carouselItems.length - 1) {
-                    percentage = -(vm.carouselItems.length * 100);
-                } else {
-                    if (vm.activeIndex >= vm.carouselItems.length - vm.carouselMultiple && index < (vm.activeIndex - 1)) {
-                        percentage = (vm.carouselItems.length - vm.activeIndex) * 100;
-                    } else {
-                        percentage = -(vm.activeIndex * 100);
-                    }
+                    percentage = -100;
                 }
+                if (index < (vm.activeIndex - 1)) {
+                    percentage = vm.carouselMultiple  * 100
+                }
+                if (vm.activeIndex >= (vm.carouselItems.length - vm.carouselMultiple) && index < (vm.activeIndex - 1)) {
+                    percentage = ((vm.carouselItems.length - vm.activeIndex) + index) * 100;
+                }
+
                 return percentage;
+
             }
 
             function getStyleForRegular(index, percentage) {
@@ -224,15 +229,8 @@
 
                                 linker(childScope, function (clone) {
 
-                                    // Specific styles according to view type
-                                    if ($attr.carouselMultiple > 1) {
-                                        var viewStyles = "position:absolute;left:" + 100/$attr.carouselMultiple*i +"%;";
-                                    } else {
-                                        var viewStyles = "position:absolute;";
-                                    }
-
                                     var listItem = "<li " +
-                                                   "style=\""+viewStyles+"width: "+width+"%; height: 100%; background-size: cover; background-position: 50% 0%;\" " +
+                                                   "style=\"position:absolute;width: "+width+"%; height: 100%; background-size: cover; background-position: 50% 0%;\" " +
                                                    "data-ng-mouseenter=\"carousel.pause()\" " +
                                                    "data-ng-mouseleave=\"carousel.restart()\" " +
                                                    "data-ng-click=\"carousel.goToIndex("+i+")\" " +
