@@ -70,9 +70,6 @@
             vm.carouselMultiple = parseInt(vm.carouselMultiple);
             var item = vm.carouselItems[index];
             var percentage = 0;
-            if (item.src === undefined) {
-                item.src = ''; // quickfix I know its ugly
-            }
             if (vm.carouselItems.length > 1) {
                 if (vm.carouselMultiple > 1) {
                     percentage = getStyleForMultiple(index, percentage);
@@ -118,7 +115,7 @@
             }
 
             return {
-                'background-image': "url(" + item.src + ")",
+                'background-image': (item.src!==undefined) ? "url(" + item.src + ")" : "none",
                 'transform': "translateX(" + percentage + "%)",
                 'transition': 'transform '+ transitionTime +'s linear',
                 'opacity': getOpacity(index)
@@ -242,7 +239,7 @@
                                                    "data-ng-click=\"carousel.goToIndex("+i+")\" " +
                                                    "data-ng-style=\"carousel.getStyle("+i+")\" " +
                                                    "class=\""+$attr.carouselItemClassName+"\"" +
-                                                   "data-ng-class=\"{'active': $index==carousel.activeIndex}\">" +
+                                                   "data-ng-class=\"{'active': "+i+"==carousel.activeIndex}\">" +
                                                    "</li>";
 
                                     // clone the transcluded element, passing in the new scope.
