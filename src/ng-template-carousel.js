@@ -131,7 +131,8 @@
                 'transform': "translateX(" + percentage + "%)",
                 '-webkit-transition': 'transform '+ transitionTime +'s linear',
                 'transition': 'transform '+ transitionTime +'s linear',
-                'opacity': getOpacity(index)
+                'opacity': getOpacity(index),
+                'z-index': getOpacity(index)
             };
         }
         function pause() {
@@ -152,6 +153,7 @@
         }
 
         function goToIndex(index) {
+            console.log(index);
             var abs = Math.abs(vm.activeIndex - index);
             var transitionTime2 = ((transitionTime*1000)/abs);
 
@@ -174,6 +176,27 @@
             doYourThing(index);
         }
 
+        function goToPrev() {
+            if (vm.interval) {
+                $interval.cancel(vm.interval);
+            }
+            if (vm.activeIndex === vm.carouselItems.length - 1 || vm.activeIndex >= vm.carouselItems.length) {
+                vm.activeIndex = 0;
+            } else {
+                vm.activeIndex--;
+            }
+        }
+        function goToNext() {
+            if (vm.interval) {
+                $interval.cancel(vm.interval);
+            }
+            if (vm.activeIndex === vm.carouselItems.length - 1 || vm.activeIndex >= vm.carouselItems.length) {
+                vm.activeIndex = 0;
+            } else {
+                vm.activeIndex++;
+            }
+        }
+
         ///////////////////////////////////
 
         vm.getStyle = getStyle;
@@ -181,6 +204,8 @@
         vm.restart = restart;
         vm.goToIndex = goToIndex;
         vm.getCurrentClass = getCurrentClass;
+        vm.goToPrev = goToPrev;
+        vm.goToNext = goToNext;
 
         //////////////////////////////////
 
@@ -198,7 +223,8 @@
             scope: {
                 carouselItemClassName: "@?",
                 carouselDuration: "@?",
-                carouselMultiple: "@?"
+                carouselMultiple: "@?",
+                carouselControls: "@?"
             },
             replace: true,
             transclude: true,
@@ -230,14 +256,24 @@
                             "<ul style=\"height: 100%;list-style: none;margin: 0;padding: 0;\">" +
                             "</ul>" +
                             "</div>";
+                        
+                        var controls = "<div class=\"controls\">" +
+                            "<span class=\"carousel-prev\" data-ng-click=\"carousel.goToPrev()\">Previous</span>" +
+                            "<span class=\"carousel-next\" data-ng-click=\"carousel.goToNext()\">Next</span>" +
+                            "</div>";
+                        
                         $element.append(container);
+
+                        if ($attr.carouselControls === "") {
+                            $element.prepend(controls);
+                        }
 
                         var parent = $element.find('ul');
 
                         $scope.$parent.$watchCollection(collectionString, function (collection) {
 
                             var width = 100 / $attr.carouselMultiple;
-                            
+
                             for (var i = 0; i < collection.length; i++) {
                                 var childScope = $scope.$new();
 
@@ -257,7 +293,7 @@
 
                                     // clone the transcluded element, passing in the new scope.
                                     parent.append(listItem); // add to DOM
-                                    
+
                                     var liElements = parent.find('li');
                                     var liElement = angular.element(liElements[liElements.length - 1]);
                                     liElement.append(clone);
@@ -272,6 +308,8 @@
                             }
                             $controller.restart();
                         });
+                        var controlsEl = angular.element($element.find('.controls'));
+                        $compile(controlsEl)($scope);
                     }
                 };
             }
