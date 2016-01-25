@@ -2,7 +2,7 @@
     "use strict";
 
     /**
-     * Carousel controller definition
+     * Carousel controller defintion
      */
     function carouselController($interval, $timeout) {
         var vm = this;
@@ -258,8 +258,8 @@
                             "</div>";
                         
                         var controls = "<div class=\"controls\">" +
-                            "<span class=\"carousel-prev\" data-ng-click=\"carousel.goToPrev()\">Previous</span>" +
-                            "<span class=\"carousel-next\" data-ng-click=\"carousel.goToNext()\">Next</span>" +
+                            "<span class=\"carousel-prev\" data-ng-click=\"carousel.goToPrev()\"><</span>" +
+                            "<span class=\"carousel-next\" data-ng-click=\"carousel.goToNext()\">></span>" +
                             "</div>";
                         
                         $element.append(container);
