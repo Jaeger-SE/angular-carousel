@@ -2,7 +2,7 @@
     "use strict";
 
     /**
-     * Carousel controller defintion
+     * Carousel controller definition
      */
     function carouselController($interval, $timeout) {
         var vm = this;
