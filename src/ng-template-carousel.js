@@ -17,6 +17,13 @@
         
         var transitionTime = 1; // seconds
 
+        function getCurrentClass(index) {
+            if (vm.activeIndex == index) {
+                return 'active';
+            }
+            return '';
+        }
+
         function getOpacity(index) {
             vm.carouselMultiple = parseInt(vm.carouselMultiple);
             if (vm.carouselMultiple > 1) {
@@ -51,7 +58,7 @@
             function getOpacityForRegular(index) {
                 if (index === 0) {
                     // first
-                    if (vm.activeIndex === vm.carouselItems.length - 1) {
+                    if (vm.activeIndex === vm.carouselItems.length - 1 && vm.carouselItems.length > 2) {
                         return 0;
                     }
                 }
@@ -97,31 +104,36 @@
 
             function getStyleForRegular(index, percentage) {
                 if (vm.activeIndex === 0 && index === vm.carouselItems.length - 1) {
-                    percentage = -100;
+                    if (vm.carouselItems.length === 2) {
+                        return 100;
+                    }
+                    return -100;
                 } else {
                     if (vm.activeIndex === vm.carouselItems.length - 1 && index === 0) {
-                        percentage = 100;
+                        if (vm.carouselItems.length === 2) {
+                            return -100;
+                        }
+                        return 100;
                     } else {
                         if (vm.activeIndex > index) {
-                            percentage = - 100;
+                            return -100;
                         } else {
                             if (vm.activeIndex < index) {
-                                percentage = 100;
+                                return 100;
                             }
                         }
                     }
                 }
-                return percentage;
             }
 
             return {
                 'background-image': (item.src!==undefined) ? "url(" + item.src + ")" : "none",
                 'transform': "translateX(" + percentage + "%)",
+                '-webkit-transition': 'transform '+ transitionTime +'s linear',
                 'transition': 'transform '+ transitionTime +'s linear',
                 'opacity': getOpacity(index)
             };
         }
-
         function pause() {
             $interval.cancel(vm.interval);
         }
@@ -168,6 +180,7 @@
         vm.pause = pause;
         vm.restart = restart;
         vm.goToIndex = goToIndex;
+        vm.getCurrentClass = getCurrentClass;
 
         //////////////////////////////////
 
@@ -213,8 +226,8 @@
                             indexString = match[1],
                             collectionString = match[2];
 
-                        var container = "<div style=\"overflow:hidden;position:relative;height:100%;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;\">" +
-                            "<ul style=\"height: 100%;list-style: none;margin: 0;padding: 0;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;\">" +
+                        var container = "<div style=\"overflow:hidden;position:relative;height:100%;\">" +
+                            "<ul style=\"height: 100%;list-style: none;margin: 0;padding: 0;\">" +
                             "</ul>" +
                             "</div>";
                         $element.append(container);
@@ -233,13 +246,13 @@
                                 linker(childScope, function (clone) {
 
                                     var listItem = "<li " +
-                                                   "style=\"position:absolute;width: "+width+"%; height: 100%; background-size: cover; background-position: 50% 0%;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;\" " +
+                                                   "style=\"position:absolute;width: "+width+"%; height: 100%; background-size: cover; background-position: 50% 0%;transition-property: all!important;\"" +
                                                    "data-ng-mouseenter=\"carousel.pause()\" " +
                                                    "data-ng-mouseleave=\"carousel.restart()\" " +
                                                    "data-ng-click=\"carousel.goToIndex("+i+")\" " +
                                                    "data-ng-style=\"carousel.getStyle("+i+")\" " +
-                                                   "class=\""+$attr.carouselItemClassName+"\"" +
-                                                   "data-ng-class=\"{'active': "+i+"==carousel.activeIndex}\">" +
+                                                   "class=\"" + $attr.carouselItemClassName + " \">" +
+                                                   // "data-ng-class=\"carousel.getCurrentClass("+i+")\"" +
                                                    "</li>";
 
                                     // clone the transcluded element, passing in the new scope.

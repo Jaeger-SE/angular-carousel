@@ -33,6 +33,30 @@
                 src: 'http://placehold.it/1140x250?text=You',
                 title: 'Slide 6 (5)'
             },
+            {
+                src: 'http://placehold.it/1140x250?text=You',
+                title: 'Slide 7 (6)'
+            },
+            {
+                src: 'http://placehold.it/1140x250?text=You',
+                title: 'Slide 8 (7)'
+            },
+            {
+                src: 'http://placehold.it/1140x250?text=You',
+                title: 'Slide 9 (8)'
+            },
+            {
+                src: 'http://placehold.it/1140x250?text=You',
+                title: 'Slide 10 (9)'
+            },
+            {
+                src: 'http://placehold.it/1140x250?text=You',
+                title: 'Slide 11 (10)'
+            },
+            {
+                src: 'http://placehold.it/1140x250?text=You',
+                title: 'Slide 12 (11)'
+            },
         ];
     }
 })();
