@@ -46,19 +46,29 @@
 
         <hr>
 
-        <section class="default">
+        <section class="duration">
             <h2>Custom Duration:</h2>
             <code>
-                data-carousel="slide in demo.slides" data-carousel-duration="5"
+                data-carousel="slide in demo.slides" data-carousel-duration="2"
             </code>
-            <div class="carousel" data-carousel="slide in demo.slides" data-carousel-duration="5">
+            <div class="carousel" data-carousel="slide in demo.slides" data-carousel-duration="2">
+                <h3>{{ slide.title }}</h3>
+            </div>
+        </section>
+
+        <section class="multiple">
+            <h2>Multiple Items at the same time:</h2>
+            <code>
+                data-carousel="slide in demo.slides" data-carousel-duration="2" data-carousel-multiple="3"
+            </code>
+            <div class="carousel" data-carousel="slide in demo.slides" data-carousel-duration="2" data-carousel-multiple="3">
                 <h3>{{ slide.title }}</h3>
             </div>
         </section>
     </div>
     
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.8/angular.min.js"></script>
-    <script src="../lib/ng-template-carousel.js"></script>
+    <script src="lib/ng-template-carousel.js"></script>
 
     <!-- APP -->
     <script src="app.setup.js"></script>
