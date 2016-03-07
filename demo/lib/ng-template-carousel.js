@@ -22,7 +22,7 @@
          * Debug
          */
         function log(text) {
-            console.log(text);
+            // console.log(text);
         }
 
         /**
@@ -231,7 +231,7 @@
 
             function handleEndOfGoto(){
                 if(vm.carouselNavigationCallback){
-                    vm.carouselNavigationCallback();
+                    vm.carouselNavigationCallback(vm.carouselItems[vm.activeIndex]);
                 }
                 transitionTimeOverride = undefined;
                 vm.restart();
