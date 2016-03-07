@@ -230,8 +230,8 @@
             }
 
             function handleEndOfGoto(){
-                if(vm.carouselClick){
-                    vm.carouselClick();
+                if(vm.carouselNavigationCallback){
+                    vm.carouselNavigationCallback();
                 }
                 transitionTimeOverride = undefined;
                 vm.restart();
