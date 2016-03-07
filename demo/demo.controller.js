@@ -58,5 +58,9 @@
                 title: 'Slide 12 (11)'
             }
         ];
+
+        vm.showAlert = function(){
+            alert("Olivier, attaque snort!")
+        }
     }
 })();

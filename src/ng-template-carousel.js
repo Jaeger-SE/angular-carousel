@@ -195,8 +195,7 @@
 
             function moveLeft(count, stepTransitionTime) {
                 if (count <= 0) {
-                    transitionTimeOverride = undefined;
-                    vm.restart();
+                    handleEndOfGoto();
                     return;
                 }
                 if (vm.activeIndex <= 0) {
@@ -212,8 +211,7 @@
 
             function moveRight(count, stepTransitionTime) {
                 if (count <= 0) {
-                    transitionTimeOverride = undefined;
-                    vm.restart();
+                    handleEndOfGoto();
                     return;
                 }
                 if (vm.activeIndex >= vm.carouselItems.length - 1) {
@@ -228,10 +226,15 @@
             }
 
             function computeTransitionOverride(count){
-                //if(count >= 2){
-                    return (transitionTime / count) * Math.log(count);
-                //}
-                //return (transitionTime / count);
+                return (transitionTime / count) * Math.log(count);
+            }
+
+            function handleEndOfGoto(){
+                if(vm.carouselClick){
+                    vm.carouselClick();
+                }
+                transitionTimeOverride = undefined;
+                vm.restart();
             }
 
             // LOGIC
@@ -309,7 +312,8 @@
                 carouselItemClassName: "@?",
                 carouselDuration: "@?",
                 carouselMultiple: "@?",
-                carouselControls: "@?"
+                carouselControls: "@?",
+                carouselClick: "&?"
             },
             replace: true,
             transclude: true,
@@ -326,6 +330,9 @@
                 }
                 if (!attr.carouselDuration) {
                     attr.$set("carouselDuration", "10");
+                }
+                if (!attr.carouselClick) {
+                    attr.$set("carouselClick", "undefined");
                 }
                 return {
                     pre: function preLink($scope, $element, $attr, $controller) {
