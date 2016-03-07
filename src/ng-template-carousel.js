@@ -281,7 +281,13 @@
         }
 
         function isNavVisible() {
-            return vm.carouselItems.length > vm.carouselMultiple;
+            if (vm.carouselMultiple) {
+                return vm.carouselItems.length > vm.carouselMultiple;
+            }
+            if (vm.carouselItems.length < 2) {
+                return false;
+            }
+            return true;
         }
 
         ///////////////////////////////////
