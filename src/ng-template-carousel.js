@@ -308,7 +308,7 @@
 
     carouselController.$inject = ["$interval", "$timeout"];
 
-    /**    
+    /**
     * Directive definition
      */
     function carouselDirective($compile) {
@@ -319,7 +319,7 @@
                 carouselDuration: "@",
                 carouselMultiple: "@",
                 carouselControls: "@",
-                carouselNavigationCallback: "&"
+                carouselNavigationCallback: "="
             },
             replace: true,
             transclude: true,
