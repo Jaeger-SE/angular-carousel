@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="demo">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>Angular Carousel Examples</title>
+
+    <!-- Bootstrap -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .carousel{
+            height: 250px;
+        }
+    </style>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    
+    <div class="container" data-ng-controller="DemoController as demo">
+        <div class="page-header">
+            <h1>
+                Demo Page
+                <small>All the examples you need</small>
+            </h1>
+        </div>
+        
+        <p>The only thing you need to do is to define the height of the slider container.</p>
+        
+        <section class="default">
+            <h2>Default:</h2>
+            <code data-ng-non-bindable>
+                &lt;div data-carousel="slide in demo.slides"&gt;&lt;h3&gt;{{ slide.title }}&lt;/h3&gt;&lt;/div&gt;</code>
+            <div class="carousel" data-carousel="slide in demo.slides">
+                <h3>{{ slide.title }}</h3>
+            </div>
+        </section>
+
+        <hr>
+
+        <section class="duration">
+            <h2>Custom Duration:</h2>
+            <code>
+                data-carousel="slide in demo.slides" data-carousel-duration="2"
+            </code>
+            <div class="carousel" data-carousel="slide in demo.slides" data-carousel-duration="2">
+                <h3>{{ slide.title }}</h3>
+            </div>
+        </section>
+
+        <section class="multiple">
+            <h2>Multiple Items at the same time:</h2>
+            <code>
+                data-carousel="slide in demo.slides" data-carousel-duration="2" data-carousel-multiple="2"
+            </code>
+            <div class="carousel" data-carousel="slide in demo.slides" data-carousel-duration="2" data-carousel-multiple="2">
+                <h3>{{ slide.title }}</h3>
+            </div>
+        </section>
+
+        <section class="multiple">
+            <h2>Multiple Items at the same time:</h2>
+            <code>
+                data-carousel="slide in demo.slides" data-carousel-duration="20" data-carousel-multiple="6" data-carousel-controls
+            </code>
+            <div class="carousel" data-carousel="slide in demo.slides" data-carousel-duration="20" data-carousel-multiple="6" data-carousel-controls data-carousel-navigation-callback="demo.showAlert()">
+                <h3>{{ slide.title }}</h3>
+            </div>
+        </section>
+    </div>
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.8/angular.min.js"></script>
+    <script src="lib/ng-template-carousel.js"></script>
+
+    <!-- APP -->
+    <script src="app.setup.js"></script>
+    <script src="demo.controller.js"></script>
+</body>
+</html>
