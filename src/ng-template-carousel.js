@@ -308,18 +308,18 @@
 
     carouselController.$inject = ["$interval", "$timeout"];
 
-    /**    
+    /**
     * Directive definition
      */
     function carouselDirective($compile) {
         return {
             restrict: "EA",
             scope: {
-                carouselItemClassName: "@?",
-                carouselDuration: "@?",
-                carouselMultiple: "@?",
-                carouselControls: "@?",
-                carouselClick: "&?"
+                carouselItemClassName: "@",
+                carouselDuration: "@",
+                carouselMultiple: "@",
+                carouselControls: "@",
+                carouselClick: "&"
             },
             replace: true,
             transclude: true,
