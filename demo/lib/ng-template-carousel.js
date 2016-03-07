@@ -233,7 +233,6 @@
 
             function handleEndOfGoto() {
                 if(vm.carouselNavigationCallback) {
-                    console.log(item);
                     vm.carouselNavigationCallback(item);
                 }
                 transitionTimeOverride = undefined;
