@@ -14,24 +14,25 @@
         vm.carouselItems = [];
 
         ///////////////////////////////////
-        
+
         var transitionTime = 1; // seconds
+        var transitionTimeOverride = undefined;
 
         /**
          * Debug
          */
-         function log(text){
+        function log(text) {
             console.log(text);
-         }
+        }
 
         /**
          * Slider css
          */
         function getCurrentClass(index) {
             if (vm.activeIndex == index) {
-                return 'active';
+                return "active";
             }
-            return '';
+            return "";
         }
 
         function getOpacity(index) {
@@ -52,7 +53,7 @@
                 if (index === (vm.activeIndex - 1) || index === vm.activeIndex) {
                     return 1;
                 }
-                if (index > vm.activeIndex && index <= (vm.activeIndex + vm.carouselMultiple -1)) {
+                if (index > vm.activeIndex && index <= (vm.activeIndex + vm.carouselMultiple - 1)) {
                     return 1;
                 }
                 if (vm.activeIndex > vm.carouselItems.length - vm.carouselMultiple) {
@@ -96,16 +97,16 @@
             }
 
             function getStyleForMultiple(index, percentage) {
-                if(vm.carouselMultiple >= vm.carouselItems.length){
+                if (vm.carouselMultiple >= vm.carouselItems.length) {
                     return index * 100;
                 }
 
                 percentage = -((vm.activeIndex - index) * 100);
-                if (vm.activeIndex === 0 && index === vm.carouselItems.length - 1 && (vm.activeIndex + vm.carouselMultiple - 1) < index ) {
+                if (vm.activeIndex === 0 && index === vm.carouselItems.length - 1 && (vm.activeIndex + vm.carouselMultiple - 1) < index) {
                     percentage = -100;
                 }
                 if (index < (vm.activeIndex - 1)) {
-                    percentage = vm.carouselMultiple  * 100
+                    percentage = vm.carouselMultiple * 100;
                 }
                 if (vm.activeIndex >= (vm.carouselItems.length - vm.carouselMultiple) && index < (vm.activeIndex - 1)) {
                     percentage = ((vm.carouselItems.length - vm.activeIndex) + index) * 100;
@@ -139,11 +140,18 @@
                 }
             }
 
+            var animationTransitionTime = transitionTime;
+            if (transitionTimeOverride) {
+                animationTransitionTime = transitionTimeOverride;
+            }
+
+            log(animationTransitionTime);
+
             return {
-                'background-image': (item.src!==undefined) ? "url(" + item.src + ")" : "none",
+                'background-image': (item.src !== undefined) ? "url(" + item.src + ")" : "none",
                 'transform': "translateX(" + percentage + "%)",
-                '-webkit-transition': 'transform '+ transitionTime +'s linear',
-                'transition': 'transform '+ transitionTime +'s linear',
+                '-webkit-transition': "transform " + animationTransitionTime + "s linear",
+                'transition': "transform " + animationTransitionTime + "s linear",
                 'opacity': getOpacity(index),
                 'z-index': getOpacity(index)
             };
@@ -166,31 +174,85 @@
                 } else {
                     vm.activeIndex++;
                 }
-            }, vm.carouselDuration * transitionTime*1000);
+            }, vm.carouselDuration * transitionTime * 1000);
         }
 
         function goToIndex(index) {
-            console.log(index);
-            var abs = Math.abs(vm.activeIndex - index);
-            var transitionTime2 = ((transitionTime*1000)/abs);
+            // FUNCTIONS
+            function getCountForLeft() {
+                if (index < vm.activeIndex) {
+                    return vm.activeIndex - index;
+                }
+                return vm.carouselItems.length - index + vm.activeIndex;
+            }
 
-            function doYourThing(index2) {
-                if(index2 == vm.activeIndex){
+            function getCountForRight() {
+                if (index > vm.activeIndex) {
+                    return index - vm.activeIndex;
+                }
+                return vm.carouselItems.length - vm.activeIndex + index;
+            }
+
+            function moveLeft(count, stepTransitionTime) {
+                if (count <= 0) {
+                    transitionTimeOverride = undefined;
+                    vm.restart();
                     return;
                 }
+                if (vm.activeIndex <= 0) {
+                    vm.activeIndex = vm.carouselItems.length - 1;
+                } else {
+                    vm.activeIndex--;
+                }
 
-                if (vm.activeIndex === vm.carouselItems.length - 1 || vm.activeIndex >= vm.carouselItems.length) {
+                $timeout(function(){
+                    moveLeft(count - 1, stepTransitionTime);
+                }, stepTransitionTime*1000);
+            }
+
+            function moveRight(count, stepTransitionTime) {
+                if (count <= 0) {
+                    transitionTimeOverride = undefined;
+                    vm.restart();
+                    return;
+                }
+                if (vm.activeIndex >= vm.carouselItems.length - 1) {
                     vm.activeIndex = 0;
                 } else {
                     vm.activeIndex++;
                 }
 
                 $timeout(function(){
-                    doYourThing(index2);
-                }, transitionTime2);
+                    moveRight(count - 1, stepTransitionTime);
+                }, stepTransitionTime*1000);
             }
 
-            doYourThing(index);
+            function computeTransitionOverride(count){
+                //if(count >= 2){
+                    return (transitionTime / count) * Math.log(count);
+                //}
+                //return (transitionTime / count);
+            }
+
+            // LOGIC
+
+            if (vm.activeIndex === index) {
+                // Clicked on active item
+                return;
+            }
+
+            vm.pause();
+
+            var leftCount = getCountForLeft();
+            var rightCount = getCountForRight();
+
+            if (leftCount < rightCount) {
+                transitionTimeOverride = computeTransitionOverride(leftCount);
+                moveLeft(leftCount, transitionTimeOverride);
+            } else {
+                transitionTimeOverride = computeTransitionOverride(rightCount);
+                moveRight(rightCount, transitionTimeOverride);
+            }
         }
 
         function goToPrev() {
@@ -203,6 +265,7 @@
                 vm.activeIndex--;
             }
         }
+
         function goToNext() {
             if (vm.interval) {
                 $interval.cancel(vm.interval);
@@ -214,6 +277,10 @@
             }
         }
 
+        function isNavVisible() {
+            return vm.carouselItems.length > vm.carouselMultiple;
+        }
+
         ///////////////////////////////////
 
         vm.getStyle = getStyle;
@@ -223,6 +290,7 @@
         vm.getCurrentClass = getCurrentClass;
         vm.goToPrev = goToPrev;
         vm.goToNext = goToNext;
+        vm.isNavVisible = isNavVisible;
 
         //////////////////////////////////
 
@@ -259,7 +327,7 @@
                 if (!attr.carouselDuration) {
                     attr.$set("carouselDuration", "10");
                 }
-                return{
+                return {
                     pre: function preLink($scope, $element, $attr, $controller) {
 
                     },
@@ -273,21 +341,21 @@
                             "<ul style=\"height: 100%;list-style: none;margin: 0;padding: 0;\">" +
                             "</ul>" +
                             "</div>";
-                        
+
                         var controls = "<div class=\"controls\">" +
-                            "<span class=\"carousel-prev\" data-ng-click=\"carousel.goToPrev()\"><</span>" +
-                            "<span class=\"carousel-next\" data-ng-click=\"carousel.goToNext()\">></span>" +
+                            "<span class=\"carousel-prev\" data-ng-click=\"carousel.goToPrev()\" data-ng-if=\"carousel.isNavVisible()\"><</span>" +
+                            "<span class=\"carousel-next\" data-ng-click=\"carousel.goToNext()\" data-ng-if=\"carousel.isNavVisible()\">></span>" +
                             "</div>";
-                        
+
                         $element.append(container);
 
-                        if ($attr.carouselControls === "") {
+                        if (typeof ($attr.carouselControls) != "undefined") {
                             $element.prepend(controls);
                         }
 
-                        var parent = $element.find('ul');
+                        var parent = $element.find("ul");
 
-                        $scope.$parent.$watchCollection(collectionString, function (collection) {
+                        $scope.$parent.$watchCollection(collectionString, function(collection) {
 
                             var width = 100 / $attr.carouselMultiple;
 
@@ -296,22 +364,22 @@
 
                                 childScope[indexString] = collection[i];
 
-                                linker(childScope, function (clone) {
+                                linker(childScope, function(clone) {
 
                                     var listItem = "<li " +
-                                                   "style=\"position:absolute;width: "+width+"%; height: 100%; background-size: cover; background-position: 50% 0%;transition-property: all!important;\"" +
-                                                   "data-ng-mouseenter=\"carousel.pause()\" " +
-                                                   "data-ng-mouseleave=\"carousel.restart()\" " +
-                                                   "data-ng-click=\"carousel.goToIndex("+i+")\" " +
-                                                   "data-ng-style=\"carousel.getStyle("+i+")\" " +
-                                                   "class=\"" + $attr.carouselItemClassName + " \">" +
-                                                   // "data-ng-class=\"carousel.getCurrentClass("+i+")\"" +
-                                                   "</li>";
+                                        "style=\"position:absolute;width: " + width + "%; height: 100%; background-size: cover; background-position: 50% 0%;transition-property: all!important;\"" +
+                                        "data-ng-mouseenter=\"carousel.pause()\" " +
+                                        "data-ng-mouseleave=\"carousel.restart()\" " +
+                                        "data-ng-click=\"carousel.goToIndex(" + i + ")\" " +
+                                        "data-ng-style=\"carousel.getStyle(" + i + ")\" " +
+                                        "class=\"" + $attr.carouselItemClassName + " \">" +
+                                        // "data-ng-class=\"carousel.getCurrentClass("+i+")\"" +
+                                        "</li>";
 
                                     // clone the transcluded element, passing in the new scope.
                                     parent.append(listItem); // add to DOM
 
-                                    var liElements = parent.find('li');
+                                    var liElements = parent.find("li");
                                     var liElement = angular.element(liElements[liElements.length - 1]);
                                     liElement.append(clone);
 
@@ -325,7 +393,7 @@
                             }
                             $controller.restart();
                         });
-                        var controlsEl = angular.element($element.find('.controls'));
+                        var controlsEl = angular.element($element.find(".controls"));
                         $compile(controlsEl)($scope);
                     }
                 };
