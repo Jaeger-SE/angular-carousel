@@ -178,6 +178,8 @@
         }
 
         function goToIndex(index) {
+            var item = vm.carouselItems[index];
+
             // FUNCTIONS
             function getCountForLeft() {
                 if (index < vm.activeIndex) {
@@ -225,13 +227,14 @@
                 }, stepTransitionTime*1000);
             }
 
-            function computeTransitionOverride(count){
+            function computeTransitionOverride(count) {
                 return (transitionTime / count) * Math.log(count);
             }
 
-            function handleEndOfGoto(){
-                if(vm.carouselNavigationCallback){
-                    vm.carouselNavigationCallback(vm.carouselItems[vm.activeIndex]);
+            function handleEndOfGoto() {
+                if(vm.carouselNavigationCallback) {
+                    console.log(item);
+                    vm.carouselNavigationCallback(item);
                 }
                 transitionTimeOverride = undefined;
                 vm.restart();
