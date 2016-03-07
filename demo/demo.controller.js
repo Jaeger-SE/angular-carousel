@@ -56,7 +56,7 @@
             {
                 src: 'http://placehold.it/1140x250?text=You',
                 title: 'Slide 12 (11)'
-            },
+            }
         ];
     }
 })();

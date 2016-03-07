@@ -17,6 +17,9 @@
         
         var transitionTime = 1; // seconds
 
+        /**
+         * Slider css
+         */
         function getCurrentClass(index) {
             if (vm.activeIndex == index) {
                 return 'active';
@@ -135,6 +138,10 @@
                 'z-index': getOpacity(index)
             };
         }
+
+        /**
+         * Navigation control functions
+         */
         function pause() {
             $interval.cancel(vm.interval);
         }

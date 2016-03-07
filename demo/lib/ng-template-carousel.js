@@ -17,6 +17,16 @@
         
         var transitionTime = 1; // seconds
 
+        /**
+         * Debug
+         */
+         function log(text){
+            console.log(text);
+         }
+
+        /**
+         * Slider css
+         */
         function getCurrentClass(index) {
             if (vm.activeIndex == index) {
                 return 'active';
@@ -33,7 +43,7 @@
             }
 
             function getOpacityForMultiple(index) {
-                if (index === (vm.carouselItems.length - 1) && vm.activeIndex === 1) {
+                if (index === (vm.carouselItems.length - 1) && vm.activeIndex === 1 && (vm.activeIndex + vm.carouselMultiple - 1) < index) {
                     return 0;
                 }
                 if (index === (vm.carouselItems.length - 1) && vm.activeIndex === 0) {
@@ -86,9 +96,12 @@
             }
 
             function getStyleForMultiple(index, percentage) {
+                if(vm.carouselMultiple >= vm.carouselItems.length){
+                    return index * 100;
+                }
 
                 percentage = -((vm.activeIndex - index) * 100);
-                if (vm.activeIndex === 0 && index === vm.carouselItems.length - 1) {
+                if (vm.activeIndex === 0 && index === vm.carouselItems.length - 1 && (vm.activeIndex + vm.carouselMultiple - 1) < index ) {
                     percentage = -100;
                 }
                 if (index < (vm.activeIndex - 1)) {
@@ -135,6 +148,10 @@
                 'z-index': getOpacity(index)
             };
         }
+
+        /**
+         * Navigation control functions
+         */
         function pause() {
             $interval.cancel(vm.interval);
         }
