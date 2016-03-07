@@ -262,8 +262,9 @@
             if (vm.interval) {
                 $interval.cancel(vm.interval);
             }
-            if (vm.activeIndex === vm.carouselItems.length - 1 || vm.activeIndex >= vm.carouselItems.length) {
-                vm.activeIndex = 0;
+
+            if (vm.activeIndex === 0){
+                vm.activeIndex = vm.carouselItems.length - 1;
             } else {
                 vm.activeIndex--;
             }
