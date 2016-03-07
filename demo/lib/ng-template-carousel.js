@@ -315,11 +315,11 @@
         return {
             restrict: "EA",
             scope: {
-                carouselItemClassName: "@?",
-                carouselDuration: "@?",
-                carouselMultiple: "@?",
-                carouselControls: "@?",
-                carouselClick: "&?"
+                carouselItemClassName: "@",
+                carouselDuration: "@",
+                carouselMultiple: "@",
+                carouselControls: "@",
+                carouselNavigationCallback: "&"
             },
             replace: true,
             transclude: true,
@@ -337,8 +337,8 @@
                 if (!attr.carouselDuration) {
                     attr.$set("carouselDuration", "10");
                 }
-                if (!attr.carouselClick) {
-                    attr.$set("carouselClick", "undefined");
+                if (!attr.carouselNavigationCallback) {
+                    attr.$set("carouselNavigationCallback", "undefined");
                 }
                 return {
                     pre: function preLink($scope, $element, $attr, $controller) {
