@@ -83,19 +83,45 @@
             }
 
         }
-
-        function getZIndex(index){
-            if(orientation > 0) {
-                // Next
-                if(vm.activeIndex === vm.carouselItems.length - 1){
-                    // Active item is the last one
-                    if (index === 0) {
-                        // item is next to the active one, and is on the right -> zindex must be the biggest.
-                        return vm.carouselItems.length;
-                    }
-                    return 0;
+        
+        var orientation = -1;
+        function getZIndex(index) {
+            function getCountForLeft() {
+                if (index < vm.activeIndex) {
+                    return vm.activeIndex - index;
                 }
+                return vm.carouselItems.length - index + vm.activeIndex;
             }
+
+            function getCountForRight() {
+                if (index > vm.activeIndex) {
+                    return index - vm.activeIndex;
+                }
+                return vm.carouselItems.length - vm.activeIndex + index;
+            }
+
+            // orientation = 1 -> right
+            // orientation = -1 -> left
+            var delta;
+            if (orientation > 0) {
+                // Right
+                delta = getCountForRight() % vm.carouselItems.length;
+            } else {
+                // Left
+                delta = getCountForLeft() % vm.carouselItems.length;
+            }
+
+            if(delta === 0) {
+                return vm.carouselItems.length - 2;
+            }
+            if(delta === 1) {
+                return vm.carouselItems.length - 1;
+            }
+            if(delta === vm.carouselItems.length - 1) {
+                return 0;
+            }
+
+            return delta;
         }
 
         function getStyle(index) {
