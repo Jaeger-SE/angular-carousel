@@ -1,4 +1,6 @@
-﻿(function() {
+﻿var este = {a:undefined};
+
+(function() {
     "use strict";
 
     /**
@@ -83,17 +85,17 @@
             }
 
         }
-        
-        var orientation = -1;
-        function getZIndex(index) {
-            function getCountForLeft() {
+
+        var orientation = 1;
+        function getDelta(index) {
+            function getCountForLeft(index) {
                 if (index < vm.activeIndex) {
                     return vm.activeIndex - index;
                 }
                 return vm.carouselItems.length - index + vm.activeIndex;
             }
 
-            function getCountForRight() {
+            function getCountForRight(index) {
                 if (index > vm.activeIndex) {
                     return index - vm.activeIndex;
                 }
@@ -102,23 +104,24 @@
 
             // orientation = 1 -> right
             // orientation = -1 -> left
-            var delta;
             if (orientation > 0) {
-                // Right
-                delta = getCountForRight() % vm.carouselItems.length;
+                return getCountForRight(index) % vm.carouselItems.length;
             } else {
-                // Left
-                delta = getCountForLeft() % vm.carouselItems.length;
+                return getCountForLeft(index) % vm.carouselItems.length;
             }
+        }
 
-            if(delta === 0) {
-                return vm.carouselItems.length - 2;
+        function getZIndex(index) {
+            var delta = getDelta(index);
+
+            if (delta === 0) {
+                return vm.carouselItems.length;
             }
-            if(delta === 1) {
-                return vm.carouselItems.length - 1;
-            }
-            if(delta === vm.carouselItems.length - 1) {
+            if (delta === 1) {
                 return 0;
+            }
+            if (delta === 2) {
+                return 2;
             }
 
             return delta;
@@ -137,47 +140,29 @@
             }
 
             function getStyleForMultiple(index, percentage) {
-                if (vm.carouselMultiple >= vm.carouselItems.length) {
-                    return index * 100;
+                var delta = getDelta(index);
+
+                if (delta - (vm.carouselItems.length - vm.carouselMultiple) === 2) {
+                    return -100;
+                }
+                if (delta >= vm.carouselMultiple) {
+                    return 100 * vm.carouselMultiple;
                 }
 
-                percentage = -((vm.activeIndex - index) * 100);
-                if (vm.activeIndex === 0 && index === vm.carouselItems.length - 1 && (vm.activeIndex + vm.carouselMultiple - 1) < index) {
-                    percentage = -100;
-                }
-                if (index < (vm.activeIndex - 1)) {
-                    percentage = vm.carouselMultiple * 100;
-                }
-                if (vm.activeIndex >= (vm.carouselItems.length - vm.carouselMultiple) && index < (vm.activeIndex - 1)) {
-                    percentage = ((vm.carouselItems.length - vm.activeIndex) + index) * 100;
-                }
-
-                return percentage;
-
+                return delta*100;
             }
 
             function getStyleForRegular(index, percentage) {
-                if (vm.activeIndex === 0 && index === vm.carouselItems.length - 1) {
-                    if (vm.carouselItems.length === 2) {
-                        return 100;
-                    }
+                var delta = getDelta(index);
+
+                if (delta - (vm.carouselItems.length - 1) === 0) {
                     return -100;
-                } else {
-                    if (vm.activeIndex === vm.carouselItems.length - 1 && index === 0) {
-                        if (vm.carouselItems.length === 2) {
-                            return -100;
-                        }
-                        return 100;
-                    } else {
-                        if (vm.activeIndex > index) {
-                            return -100;
-                        } else {
-                            if (vm.activeIndex < index) {
-                                return 100;
-                            }
-                        }
-                    }
                 }
+                if (delta >= 1) {
+                    return 100;
+                }
+
+                return delta*100;
             }
 
             var animationTransitionTime = transitionTime;
@@ -220,21 +205,6 @@
         function goToIndex(index) {
             var item = vm.carouselItems[index];
 
-            // FUNCTIONS
-            function getCountForLeft() {
-                if (index < vm.activeIndex) {
-                    return vm.activeIndex - index;
-                }
-                return vm.carouselItems.length - index + vm.activeIndex;
-            }
-
-            function getCountForRight() {
-                if (index > vm.activeIndex) {
-                    return index - vm.activeIndex;
-                }
-                return vm.carouselItems.length - vm.activeIndex + index;
-            }
-
             function moveLeft(count, stepTransitionTime) {
                 if (count <= 0) {
                     handleEndOfGoto();
@@ -246,9 +216,9 @@
                     vm.activeIndex--;
                 }
 
-                $timeout(function(){
+                $timeout(function() {
                     moveLeft(count - 1, stepTransitionTime);
-                }, stepTransitionTime*1000);
+                }, stepTransitionTime * 1000);
             }
 
             function moveRight(count, stepTransitionTime) {
@@ -262,9 +232,9 @@
                     vm.activeIndex++;
                 }
 
-                $timeout(function(){
+                $timeout(function() {
                     moveRight(count - 1, stepTransitionTime);
-                }, stepTransitionTime*1000);
+                }, stepTransitionTime * 1000);
             }
 
             function computeTransitionOverride(count) {
@@ -272,7 +242,7 @@
             }
 
             function handleEndOfGoto() {
-                if(vm.carouselNavigationCallback) {
+                if (vm.carouselNavigationCallback) {
                     vm.carouselNavigationCallback(item);
                 }
                 transitionTimeOverride = undefined;
@@ -288,8 +258,8 @@
 
             vm.pause();
 
-            var leftCount = getCountForLeft();
-            var rightCount = getCountForRight();
+            var leftCount = getCountForLeft(index);
+            var rightCount = getCountForRight(index);
 
             if (leftCount < rightCount) {
                 transitionTimeOverride = computeTransitionOverride(leftCount);
@@ -305,12 +275,14 @@
                 $interval.cancel(vm.interval);
             }
 
-            if (vm.activeIndex === 0){
+            if (vm.activeIndex === 0) {
                 vm.activeIndex = vm.carouselItems.length - 1;
             } else {
                 vm.activeIndex--;
             }
         }
+
+        este.a = goToPrev;
 
         function goToNext() {
             if (vm.interval) {
