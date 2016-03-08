@@ -84,6 +84,20 @@
 
         }
 
+        function getZIndex(index){
+            if(orientation > 0) {
+                // Next
+                if(vm.activeIndex === vm.carouselItems.length - 1){
+                    // Active item is the last one
+                    if (index === 0) {
+                        // item is next to the active one, and is on the right -> zindex must be the biggest.
+                        return vm.carouselItems.length;
+                    }
+                    return 0;
+                }
+            }
+        }
+
         function getStyle(index) {
             vm.carouselMultiple = parseInt(vm.carouselMultiple);
             var item = vm.carouselItems[index];
@@ -153,7 +167,7 @@
                 '-webkit-transition': "transform " + animationTransitionTime + "s linear",
                 'transition': "transform " + animationTransitionTime + "s linear",
                 'opacity': getOpacity(index),
-                'z-index': getOpacity(index)
+                'z-index': getZIndex(index)
             };
         }
 
