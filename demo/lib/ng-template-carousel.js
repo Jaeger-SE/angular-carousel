@@ -96,23 +96,22 @@
         }
 
         var orientationOverride = undefined;
+        function getCountForLeft(index) {
+            return mod(vm.activeIndex - index, vm.carouselItems.length);
+        }
+
+        function getCountForRight(index) {
+            return mod(index - vm.activeIndex, vm.carouselItems.length);
+            /*if (index > vm.activeIndex) {
+                return index - vm.activeIndex;
+            }
+            return vm.carouselItems.length - vm.activeIndex + index;*/
+        }
+        function mod(number, modulo) {
+            return ((number%modulo)+modulo)%modulo;
+        }
+
         function getDelta(index) {
-            function mod(number, modulo) {
-                return ((number%modulo)+modulo)%modulo;
-            }
-
-            function getCountForLeft() {
-                return mod(vm.activeIndex - index, vm.carouselItems.length);
-            }
-
-            function getCountForRight() {
-                return mod(index - vm.activeIndex, vm.carouselItems.length);
-                /*if (index > vm.activeIndex) {
-                    return index - vm.activeIndex;
-                }
-                return vm.carouselItems.length - vm.activeIndex + index;*/
-            }
-
             // orientation = 1 -> right
             // orientation = -1 -> left
             if(typeof(orientationOverride) !== 'undefined') {
