@@ -18,7 +18,7 @@
                 title: 'Slide 2 (1)'
             },
             {
-                src: 'http://placehold.it/1140x250/ffcc00/0000?text=Force',
+                src: 'http://placehold.it/1140x250/cc00FF/0000?text=Force',
                 title: 'Slide 3 (2)'
             },
             {
@@ -28,11 +28,11 @@
             {
                 src: 'http://placehold.it/1140x250/ffcc00/0000?text=With',
                 title: 'Slide 5 (4)'
-            },
+            }/*,
             {
                 src: 'http://placehold.it/1140x250?text=You',
                 title: 'Slide 6 (5)'
-            }/*,
+            },
             {
                 src: 'http://placehold.it/1140x250?text=You',
                 title: 'Slide 7 (6)'

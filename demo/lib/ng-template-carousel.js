@@ -1,6 +1,4 @@
-﻿var este = {a:undefined};
-
-(function() {
+﻿(function() {
     "use strict";
 
     /**
@@ -14,7 +12,7 @@
         vm.activeIndex = 0;
         vm.interval = undefined;
         vm.carouselItems = [];
-        var orientation = -1;
+        var orientation = 1;
         if (isNaN(vm.carouselMultiple)) {
             vm.carouselMultiple = 1;
         }
@@ -50,6 +48,11 @@
             }
 
             function getOpacityForMultiple(index) {
+                var delta = getDelta(index);
+                if (delta === vm.carouselMultiple) {
+                    return 0;
+                }
+
                 return 1;
                 /*if (index === (vm.carouselItems.length - 1) && vm.activeIndex === 1 && (vm.activeIndex + vm.carouselMultiple - 1) < index) {
                     return 0;
@@ -136,18 +139,6 @@
             }
 
             return 1;
-/*
-            if (delta === 0) {
-                return vm.carouselItems.length;
-            }
-            if (delta === 1) {
-                return 0;
-            }
-            if (delta === 2) {
-                return 2;
-            }
-
-            return delta;*/
         }
 
         function getStyle(index) {
@@ -319,8 +310,6 @@
                 vm.activeIndex--;
             }
         }
-
-        este.a = goToPrev;
 
         function goToNext() {
             orientationOverride = 1;
