@@ -1,4 +1,6 @@
-﻿(function() {
+﻿var este = {a:undefined};
+
+(function() {
     "use strict";
 
     /**
@@ -12,6 +14,10 @@
         vm.activeIndex = 0;
         vm.interval = undefined;
         vm.carouselItems = [];
+        var orientation = -1;
+        if (isNaN(vm.carouselMultiple)) {
+            vm.carouselMultiple = 1;
+        }
 
         ///////////////////////////////////
 
@@ -44,7 +50,8 @@
             }
 
             function getOpacityForMultiple(index) {
-                if (index === (vm.carouselItems.length - 1) && vm.activeIndex === 1 && (vm.activeIndex + vm.carouselMultiple - 1) < index) {
+                return 1;
+                /*if (index === (vm.carouselItems.length - 1) && vm.activeIndex === 1 && (vm.activeIndex + vm.carouselMultiple - 1) < index) {
                     return 0;
                 }
                 if (index === (vm.carouselItems.length - 1) && vm.activeIndex === 0) {
@@ -63,10 +70,11 @@
                     }
                 }
                 return 0;
-
+*/
             }
 
             function getOpacityForRegular(index) {
+                return 1;
                 if (index === 0) {
                     // first
                     if (vm.activeIndex === vm.carouselItems.length - 1 && vm.carouselItems.length > 2) {
@@ -84,18 +92,62 @@
 
         }
 
-        function getZIndex(index){
-            if(orientation > 0) {
-                // Next
-                if(vm.activeIndex === vm.carouselItems.length - 1){
-                    // Active item is the last one
-                    if (index === 0) {
-                        // item is next to the active one, and is on the right -> zindex must be the biggest.
-                        return vm.carouselItems.length;
-                    }
-                    return 0;
+        var orientationOverride = undefined;
+        function getDelta(index) {
+            function mod(number, modulo) {
+                return ((number%modulo)+modulo)%modulo;
+            }
+
+            function getCountForLeft() {
+                return mod(vm.activeIndex - index, vm.carouselItems.length);
+            }
+
+            function getCountForRight() {
+                return mod(index - vm.activeIndex, vm.carouselItems.length);
+                /*if (index > vm.activeIndex) {
+                    return index - vm.activeIndex;
+                }
+                return vm.carouselItems.length - vm.activeIndex + index;*/
+            }
+
+            // orientation = 1 -> right
+            // orientation = -1 -> left
+            if(typeof(orientationOverride) !== 'undefined') {
+                if (orientationOverride > 0) {
+                    orientationOverride = undefined;
+                    return getCountForRight(index) % vm.carouselItems.length;
+                } else {
+                    orientationOverride = undefined;
+                    return getCountForLeft(index) % vm.carouselItems.length;
                 }
             }
+
+            if (orientation > 0) {
+                return getCountForRight(index) % vm.carouselItems.length;
+            } else {
+                return getCountForLeft(index) % vm.carouselItems.length;
+            }
+        }
+
+        function getZIndex(index) {
+            var delta = getDelta(index);
+            if (delta === vm.carouselMultiple) {
+                return 0;
+            }
+
+            return 1;
+/*
+            if (delta === 0) {
+                return vm.carouselItems.length;
+            }
+            if (delta === 1) {
+                return 0;
+            }
+            if (delta === 2) {
+                return 2;
+            }
+
+            return delta;*/
         }
 
         function getStyle(index) {
@@ -104,54 +156,47 @@
             var percentage = 0;
             if (vm.carouselItems.length > 1) {
                 if (vm.carouselMultiple > 1) {
-                    percentage = getStyleForMultiple(index, percentage);
+                    percentage = getStyleForMultiple(index);
                 } else {
-                    percentage = getStyleForRegular(index, percentage);
+                    percentage = getStyleForRegular(index);
                 }
             }
 
-            function getStyleForMultiple(index, percentage) {
-                if (vm.carouselMultiple >= vm.carouselItems.length) {
-                    return index * 100;
-                }
+            function getStyleForMultiple(index) {
+                var delta = getDelta(index);
 
-                percentage = -((vm.activeIndex - index) * 100);
-                if (vm.activeIndex === 0 && index === vm.carouselItems.length - 1 && (vm.activeIndex + vm.carouselMultiple - 1) < index) {
-                    percentage = -100;
-                }
-                if (index < (vm.activeIndex - 1)) {
-                    percentage = vm.carouselMultiple * 100;
-                }
-                if (vm.activeIndex >= (vm.carouselItems.length - vm.carouselMultiple) && index < (vm.activeIndex - 1)) {
-                    percentage = ((vm.carouselItems.length - vm.activeIndex) + index) * 100;
-                }
-
-                return percentage;
-
-            }
-
-            function getStyleForRegular(index, percentage) {
-                if (vm.activeIndex === 0 && index === vm.carouselItems.length - 1) {
-                    if (vm.carouselItems.length === 2) {
-                        return 100;
+                if(orientation > 0) {
+                    if (delta === 0 || delta < vm.carouselMultiple) {
+                        return delta * 100;
                     }
+                    if (delta === vm.carouselMultiple){
+                        return 100 * vm.carouselMultiple;
+                    }
+
                     return -100;
                 } else {
-                    if (vm.activeIndex === vm.carouselItems.length - 1 && index === 0) {
-                        if (vm.carouselItems.length === 2) {
-                            return -100;
-                        }
-                        return 100;
-                    } else {
-                        if (vm.activeIndex > index) {
-                            return -100;
-                        } else {
-                            if (vm.activeIndex < index) {
-                                return 100;
-                            }
-                        }
+                    if (delta === 0 || delta < vm.carouselMultiple) {
+                        return 100 * Math.abs(vm.carouselMultiple - delta - 1);
                     }
+                    if (delta === vm.carouselMultiple){
+                        return 100 * vm.carouselMultiple;
+                    }
+
+                    return -100;
                 }
+            }
+
+            function getStyleForRegular(index) {
+                var delta = getDelta(index);
+
+                if (delta === 1) {
+                    return 100 * orientation;
+                }
+                if (delta >= 1) {
+                    return -100 * orientation;
+                }
+
+                return 0;
             }
 
             var animationTransitionTime = transitionTime;
@@ -183,31 +228,18 @@
                 $interval.cancel(vm.interval);
             }
             vm.interval = $interval(function() {
-                if (vm.activeIndex === vm.carouselItems.length - 1 || vm.activeIndex >= vm.carouselItems.length) {
+                vm.activeIndex += orientation;
+                if(vm.activeIndex >= vm.carouselItems.length) {
                     vm.activeIndex = 0;
-                } else {
-                    vm.activeIndex++;
+                }
+                if(vm.activeIndex < 0) {
+                    vm.activeIndex = vm.carouselItems.length - 1;
                 }
             }, vm.carouselDuration * transitionTime * 1000);
         }
 
         function goToIndex(index) {
             var item = vm.carouselItems[index];
-
-            // FUNCTIONS
-            function getCountForLeft() {
-                if (index < vm.activeIndex) {
-                    return vm.activeIndex - index;
-                }
-                return vm.carouselItems.length - index + vm.activeIndex;
-            }
-
-            function getCountForRight() {
-                if (index > vm.activeIndex) {
-                    return index - vm.activeIndex;
-                }
-                return vm.carouselItems.length - vm.activeIndex + index;
-            }
 
             function moveLeft(count, stepTransitionTime) {
                 if (count <= 0) {
@@ -220,9 +252,9 @@
                     vm.activeIndex--;
                 }
 
-                $timeout(function(){
+                $timeout(function() {
                     moveLeft(count - 1, stepTransitionTime);
-                }, stepTransitionTime*1000);
+                }, stepTransitionTime * 1000);
             }
 
             function moveRight(count, stepTransitionTime) {
@@ -236,9 +268,9 @@
                     vm.activeIndex++;
                 }
 
-                $timeout(function(){
+                $timeout(function() {
                     moveRight(count - 1, stepTransitionTime);
-                }, stepTransitionTime*1000);
+                }, stepTransitionTime * 1000);
             }
 
             function computeTransitionOverride(count) {
@@ -246,7 +278,7 @@
             }
 
             function handleEndOfGoto() {
-                if(vm.carouselNavigationCallback) {
+                if (vm.carouselNavigationCallback) {
                     vm.carouselNavigationCallback(item);
                 }
                 transitionTimeOverride = undefined;
@@ -262,8 +294,8 @@
 
             vm.pause();
 
-            var leftCount = getCountForLeft();
-            var rightCount = getCountForRight();
+            var leftCount = getCountForLeft(index);
+            var rightCount = getCountForRight(index);
 
             if (leftCount < rightCount) {
                 transitionTimeOverride = computeTransitionOverride(leftCount);
@@ -279,14 +311,19 @@
                 $interval.cancel(vm.interval);
             }
 
-            if (vm.activeIndex === 0){
+            orientationOverride = -1;
+
+            if (vm.activeIndex === 0) {
                 vm.activeIndex = vm.carouselItems.length - 1;
             } else {
                 vm.activeIndex--;
             }
         }
 
+        este.a = goToPrev;
+
         function goToNext() {
+            orientationOverride = 1;
             if (vm.interval) {
                 $interval.cancel(vm.interval);
             }

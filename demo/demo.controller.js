@@ -10,7 +10,7 @@
 
         vm.slides = [
             {
-                src: 'http://placehold.it/1140x250?text=May',
+                src: 'http://placehold.it/1140x250/ffcc00/0000?text=May',
                 title: 'Slide 1 (0)'
             },
             {
@@ -18,7 +18,7 @@
                 title: 'Slide 2 (1)'
             },
             {
-                src: 'http://placehold.it/1140x250?text=Force',
+                src: 'http://placehold.it/1140x250/ffcc00/0000?text=Force',
                 title: 'Slide 3 (2)'
             },
             {
@@ -26,7 +26,7 @@
                 title: 'Slide 4 (3)'
             },
             {
-                src: 'http://placehold.it/1140x250?text=With',
+                src: 'http://placehold.it/1140x250/ffcc00/0000?text=With',
                 title: 'Slide 5 (4)'
             },
             {
